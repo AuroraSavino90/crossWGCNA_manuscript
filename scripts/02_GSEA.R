@@ -1,14 +1,16 @@
-library(clusterProfiler)
-library(openxlsx)
-library(pheatmap)
-library(msigdbr)
-library(fgsea)
-library(data.table)
-library(org.Hs.eg.db)
+LCM_GSEA<-function(at,b,ct,pv,m, dir){
+  require(openxlsx)
+require(pheatmap)
+require(msigdbr)
+require(fgsea)
+require(data.table)
+require(org.Hs.eg.db)
 
+setwd(dir)
+source("scripts/crossWGCNA_functions_all.R")
 
-load("results/degs_3rd_netdiff.RData")
-source("scripts/crossWGCNA_functions_netdiff.R")
+setwd(paste("results/",at,b,ct,pv, sep=""))
+load(paste("degs_3rd_", m, ".RData", sep=""))
 
 names(degs) <- c("GSE5847",
                  "GSE10797",
@@ -17,7 +19,7 @@ names(degs) <- c("GSE5847",
                  "GSE68744",
                  "GSE88715")
 
-###GSEA
+###GSEA of kRatio-ranked genes (epi or stroma) for each LCM dataset
 m_df = msigdbr(species = "Homo sapiens", category = "C5")
 m_list = m_df %>% split(x = .$gene_symbol, f = .$gs_name)
 
@@ -30,7 +32,7 @@ for (j in 1:length(degs)) {
   if (nrow(fgseaRes) > 0) {
     write.xlsx(
       as.data.frame(fgseaRes[, c(1, 2, 3, 6, 7)]),
-      paste("fgsea_ratio_stroma_netdiff_", names(degs)[j], ".xlsx", sep = "")
+      paste("fgsea_ratio_stroma_", m,"_", names(degs)[j], ".xlsx", sep = "")
     )
   }
 
@@ -42,7 +44,7 @@ for (j in 1:length(degs)) {
   if (nrow(fgseaRes2) > 0) {
     write.xlsx(
       as.data.frame(fgseaRes2[, c(1, 2, 3, 6, 7)]),
-      paste("fgsea_ratio_epi_netdiff_", names(degs)[j], ".xlsx", sep = "")
+      paste("fgsea_ratio_epi_", m,"_", names(degs)[j], ".xlsx", sep = "")
     )
   }
 }
@@ -67,9 +69,9 @@ for (j in 1:length(degs)) {
 }
 
 
-#############################
-####### stroma
-###############################
+##############################################################
+####### compare GSEA results for all stroma-based kRatios
+##############################################################
 
 allpaths <- c()
 for (i in 1:length(fgseaRes)) {
@@ -86,6 +88,7 @@ for (i in 1:length(fgseaRes)) {
     1
 }
 
+###plot heatmaps considering different thresholds of number of LCM datasets with the same GO term enriched
 
 shared_paths <- allpaths_mat[rowSums(allpaths_mat) > 3,]
 allpaths_mat <-
@@ -104,7 +107,7 @@ myBreaks <-
   c(seq(0, max(unlist(toplot), na.rm = T), length.out = floor(paletteLength)))
 length(myBreaks) == length(paletteLength) + 1
 
-pdf("results/summary_GSEA_stroma_netdiff_2.pdf", 20, 30)
+pdf(paste("summary_GSEA_stroma_", m, "_2.pdf", sep=""), 20, 30)
 pheatmap(
   toplot,
   cellwidth = 10,
@@ -123,7 +126,7 @@ myBreaks <-
   c(seq(0, max(unlist(toplot), na.rm = T), length.out = floor(paletteLength)))
 length(myBreaks) == length(paletteLength) + 1
 
-pdf("results/summary_GSEA_stroma_netdiff_3.pdf", 20, 10)
+pdf(paste("summary_GSEA_stroma_", m, "_3.pdf",sep=""), 20, 10)
 pheatmap(
   toplot,
   cellwidth = 10,
@@ -134,10 +137,9 @@ pheatmap(
 )
 dev.off()
 
-#############################
-####### epi
-###############################
-
+##############################################################
+####### compare GSEA results for all epi-based kRatios
+##############################################################
 allpaths <- c()
 for (i in 1:length(fgseaRes2)) {
   allpaths <-
@@ -152,6 +154,8 @@ for (i in 1:length(fgseaRes2)) {
   allpaths_mat[fgseaRes2[[i]]$pathway[which(fgseaRes2[[i]]$pval < 0.05)], i] <-
     1
 }
+
+###plot heatmaps considering different thresholds of number of LCM datasets with the same GO term enriched
 
 shared_paths <- allpaths_mat[rowSums(allpaths_mat) > 3,]
 allpaths_mat <-
@@ -171,7 +175,7 @@ myBreaks <-
   c(seq(0, max(unlist(toplot), na.rm = T), length.out = floor(paletteLength)))
 length(myBreaks) == length(paletteLength) + 1
 
-pdf("results/summary_GSEA_epi_netdiff_3.pdf", 20, 35)
+pdf(paste("summary_GSEA_epi_", m, "_3.pdf", sep=""), 20, 35)
 pheatmap(
   toplot,
   cellwidth = 10,
@@ -191,7 +195,7 @@ myBreaks <-
   c(seq(0, max(unlist(toplot), na.rm = T), length.out = floor(paletteLength)))
 length(myBreaks) == length(paletteLength) + 1
 
-pdf("results/summary_GSEA_epi_netdiff_4.pdf", 20, 15)
+pdf(paste("summary_GSEA_epi_", m, "_4.pdf", sep=""), 20, 15)
 pheatmap(
   toplot,
   cellwidth = 10,
@@ -201,3 +205,4 @@ pheatmap(
   keep.dendro = T
 )
 dev.off()
+}
