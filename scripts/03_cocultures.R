@@ -1,14 +1,14 @@
-library(clusterProfiler)
-library(openxlsx)
-library(ggplot2)
-library(msigdbr)
-library(fgsea)
-library(data.table)
+LCM_vs_cocultures<-function(at,b,ct,pv,m, dir){
+require(ggplot2)
+require(fgsea)
+require(data.table)
+
+setwd(dir)
 
 load("data/CAFs_cocultures.RData")
 setwd(paste("results/",at,b,ct,pv, sep=""))
 
-load("degs_3rd_netdiff.RData")
+load(paste("degs_3rd_", m, ".RData", sep=""))
 
 names(degs)<-c("GSE5847", "GSE10797", "GSE14548", "GSE83591",
                "GSE68744", "GSE88715")
@@ -63,14 +63,14 @@ data <- data.frame(
   sd=c(0, sd(random_repeated_stroma))
 )
 
-pdf("stroma_gsea_signif_netdiff.pdf", 4,5)
+pdf(paste("stroma_gsea_signif_", m, ".pdf", sep=""), 4,5)
 ggplot(data) +
   geom_bar( aes(x=name, y=value), stat="identity", fill="darkgreen") +
   geom_errorbar( aes(x=name, ymin=value-sd, ymax=value+sd), width=0.4, size=1.3) + theme_bw()
 dev.off()
 
-save(random_repeated_stroma, file="random_repeated_stroma_netdiff.RData")
-load(file="random_repeated_stroma_netdiff.RData")
+save(random_repeated_stroma, file=paste("random_repeated_stroma_", m, ".RData", sep=""))
+load(file=paste("random_repeated_stroma_", m, ".RData", sep=""))
 
 set.seed(46956305)
 random_repeated_epi<-c()
@@ -91,8 +91,8 @@ for(i in 1:100){
   random_repeated_epi<-c(random_repeated_epi, sum(gsea_epi_rand<0.05, na.rm = T))
 }#5
 
-save(random_repeated_epi, file="random_repeated_epi_netdiff.RData")
-load(file="random_repeated_epi_netdiff.RData")
+save(random_repeated_epi, file=paste("random_repeated_epi_", m, ".RData", sep=""))
+load(file=paste("random_repeated_epi_", m, ".RData", sep=""))
 
 data <- data.frame(
   name=c("observed", "random"),
@@ -100,8 +100,9 @@ data <- data.frame(
   sd=c(0, sd(random_repeated_epi))
 )
 
-pdf("epi_gsea_signif_netdiff.pdf", 4,5)
+pdf(paste("epi_gsea_signif_", m, ".pdf"), sep="", 4,5)
 ggplot(data) +
   geom_bar( aes(x=name, y=value), stat="identity", fill="brown2") +
   geom_errorbar( aes(x=name, ymin=value-sd, ymax=value+sd), width=0.4, size=1.3) + theme_bw()
 dev.off()
+}
