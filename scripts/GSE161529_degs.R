@@ -3,13 +3,13 @@ setwd(dir)
   source("/scripts/crossWGCNA_functions_all.R")
 
 #load the pseudo-bulk data
-load(paste(dir, "/averagedEpiTNBC.RData", sep=""))
-load(paste(dir, "/averagedEpiHER2.RData"))
-load(paste(dir, "/averagedEpiER.RData"))
-load(paste(dir, "/averagedStromaTNBC.RData"))
-load(paste(dir, "/averagedStromaHER2.RData"))
-load(paste(dir, "/averagedStromaER.RData"))
-load(paste(dir, "/TNmerge.RData"))
+load(paste(dir, "/GSE161529/averagedEpiTNBC.RData", sep=""))
+load(paste(dir, "/GSE161529/averagedEpiHER2.RData"))
+load(paste(dir, "/GSE161529/averagedEpiER.RData"))
+load(paste(dir, "/GSE161529/averagedStromaTNBC.RData"))
+load(paste(dir, "/GSE161529/averagedStromaHER2.RData"))
+load(paste(dir, "/GSE161529/averagedStromaER.RData"))
+load(paste(dir, "/GSE161529/TNmerge.RData"))
 
 setwd(paste("results/",at,b,ct,pv, sep=""))
 
