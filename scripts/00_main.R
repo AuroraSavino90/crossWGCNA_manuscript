@@ -23,6 +23,7 @@ LCM_GSEA(at,b,ct,pv,m="selfloop", dir)
 
 #compute crossWGCNA degrees on the GSE161529 single cell RNA-seq dataset
 source("scripts/GSE161529_degs.R")
+GSE161529_degs(at,b,ct,pv, dir)
 
 ##test whether genes with high kRatio in LCM are differentially expressed upon cocultures more often than by chance.
 source("scripts/03_cocultures.R")

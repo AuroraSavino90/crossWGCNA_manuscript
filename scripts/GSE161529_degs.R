@@ -1,8 +1,6 @@
-
-################################
-######Double WGCNA epi stroma on all cells
-##############################
+GSE161529_degs<-function(at,b,ct,pv, dir){
 setwd(dir)
+  source("/scripts/crossWGCNA_functions_all.R")
 
 #load the pseudo-bulk data
 load(paste(dir, "/averagedEpiTNBC.RData", sep=""))
@@ -41,11 +39,10 @@ colnames(epi)<-colnames(stroma)
 data_merged<-rbind(stroma, epi)
 
 #crossWGCNA functions
-source("../../scripts/crossWGCNA_functions_all.R")
-
 degsc<-network(data=data_merged, method="netdiff", Adj_type="signed", cortype="pearson", pval="none", thr=0.05, beta=6, comp1="_1", comp2="_2")
 save(degsc, file="degsc_netdiff.RData")
 
 degsc<-network(data=data_merged, method="selfloop", Adj_type="signed", cortype="pearson", pval="none", thr=0.05, beta=6, comp1="_1", comp2="_2")
 save(degsc, file="degsc_selfloops.RData")
 
+}
