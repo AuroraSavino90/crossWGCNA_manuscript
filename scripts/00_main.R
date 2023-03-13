@@ -49,3 +49,6 @@ LCM_coherence(at,b,ct,pv,dir)
 source("scripts/07_pathways_netdiff.R")
 net_pathway(at,b,ct,pv,m="netdiff", dir)
 
+#apply crossWGCNA to inter-regulatory-layer interactions
+source("scripts/08_mrnavsprot.R")
+mrna_vs_prot(at,b,ct,pv,m="netdiff", dir)
