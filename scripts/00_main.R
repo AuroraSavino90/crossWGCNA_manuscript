@@ -35,3 +35,9 @@ source("scripts/04_LCM_vs_singlecell.R")
 LCM_vs_sc(at,b,ct,pv,m="netdiff", dir)
 LCM_vs_sc(at,b,ct,pv,m="selfloop", dir)
 
+#compare the two alternative algorithms
+#computing the number of identical genes measured in either stroma or epi within the same co-expression module
+#and comparing the correlation between genes' adjacencies within a tissue or inter-tissues
+source("scripts/05_compare_versions.R")
+compare_algorithms(at,b,ct,pv,dir)
+
