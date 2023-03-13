@@ -1,5 +1,5 @@
 
-compare_algorithms<-function(at,b,ct,pv,m, dir){
+compare_algorithms<-function(at,b,ct,pv,dir){
   setwd(dir)
   require(openxlsx)
   load("data/metadataAll.RData")
