@@ -41,3 +41,7 @@ LCM_vs_sc(at,b,ct,pv,m="selfloop", dir)
 source("scripts/05_compare_versions.R")
 compare_algorithms(at,b,ct,pv,dir)
 
+#compare the coherence of kratios between different LCM datasets
+source("scripts/06_datasets_coherence.R")
+LCM_coherence(at,b,ct,pv,dir)
+

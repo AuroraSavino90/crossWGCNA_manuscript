@@ -1,5 +1,8 @@
-library(pheatmap)
-library(ggpubr)
+LCM_coherence<-function(at,b,ct,pv,dir){
+    setwd(paste("results/",at,b,ct,pv, sep=""))
+require(pheatmap)
+require(ggpubr)
+
 save_pheatmap_pdf <- function(x, filename, width=5, height=5) {
     stopifnot(!missing(x))
     stopifnot(!missing(filename))
@@ -10,9 +13,9 @@ save_pheatmap_pdf <- function(x, filename, width=5, height=5) {
 }
 
 
-load("results/degs_3rd_netdiff.RData")
+load("degs_3rd_netdiff.RData")
 degs_netdiff<-degs
-load("results/degs_3rd_selfloops.RData")
+load("degs_3rd_selfloops.RData")
 
 
 names(degs) <- c("GSE5847",
@@ -22,11 +25,11 @@ names(degs) <- c("GSE5847",
                  "GSE68744",
                  "GSE88715")
 names(degs_netdiff) <- c("GSE5847",
-                 "GSE10797",
-                 "GSE14548",
-                 "GSE83591",
-                 "GSE68744",
-                 "GSE88715")
+                         "GSE10797",
+                         "GSE14548",
+                         "GSE83591",
+                         "GSE68744",
+                         "GSE88715")
 
 k_type<-c("kInt_stroma", "kInt_epi", "kExt_stroma", "kExt_epi", "kTot_stroma", "kTot_epi")
 
@@ -54,7 +57,7 @@ for (i in 1:length(degs)) {
             intersect(names(degs[[i]][[3]]),
                       names(degs[[j]][[3]]))
         corrs_sl[i, j] <- cor(degs[[i]][[3]][incommon]/degs[[i]][[1]][incommon],
-                           degs[[j]][[3]][incommon]/degs[[j]][[1]][incommon])
+                              degs[[j]][[3]][incommon]/degs[[j]][[1]][incommon])
     }
 }
 
@@ -67,7 +70,7 @@ df<-data.frame(R=c(corrs_sl[upper.tri(corrs_sl)],corrs[upper.tri(corrs)]),
                method=c(rep("selfloops", length=length(corrs_sl[upper.tri(corrs_sl)])),
                         rep("netdiff", length=length(corrs[upper.tri(corrs)]))))
 
-pdf("results/Compare_corr_kRatio_stroma.pdf", 4, 6)
+pdf("Compare_corr_kRatio_stroma.pdf", 4, 6)
 my_comparisons<-list(c("selfloops", "netdiff"))
 p<-ggviolin(df, x = "method", y = "R",
             palette = "jco", add="boxplot") + stat_compare_means(comparisons=my_comparisons) +
@@ -83,10 +86,10 @@ myBreaks <- c(seq(0,max(unlist(corrs_sl), unlist(corrs), na.rm=T),
 length(myBreaks) == length(paletteLength) + 1
 
 p<-pheatmap(corrs_sl,   cellwidth=10, cellheight=10, breaks=myBreaks, color = myColor)
-save_pheatmap_pdf(p, "results/corr_kRatio_stroma_selfloops.pdf")
+save_pheatmap_pdf(p, "corr_kRatio_stroma_selfloops.pdf")
 
 p<-pheatmap(corrs,   cellwidth=10, cellheight=10, breaks=myBreaks, color = myColor)
-save_pheatmap_pdf(p, "results/ccorr_kRatio_stroma_selfloops.pdf")
+save_pheatmap_pdf(p, "ccorr_kRatio_stroma_selfloops.pdf")
 
 ##################
 
@@ -122,7 +125,7 @@ df<-data.frame(R=c(corrs_sl[upper.tri(corrs_sl)],corrs[upper.tri(corrs)]),
                method=c(rep("selfloops", length=length(corrs_sl[upper.tri(corrs_sl)])),
                         rep("netdiff", length=length(corrs[upper.tri(corrs)]))))
 
-pdf("results/Compare_corr_kRatio_epi.pdf", 4, 6)
+pdf("Compare_corr_kRatio_epi.pdf", 4, 6)
 my_comparisons<-list(c("selfloops", "netdiff"))
 p<-ggviolin(df, x = "method", y = "R",
             palette = "jco", add="boxplot") + stat_compare_means(comparisons=my_comparisons) +
@@ -138,10 +141,10 @@ myBreaks <- c(seq(0,max(unlist(corrs_sl), unlist(corrs), na.rm=T),
 length(myBreaks) == length(paletteLength) + 1
 
 p<-pheatmap(corrs_sl,   cellwidth=10, cellheight=10, breaks=myBreaks, color = myColor)
-save_pheatmap_pdf(p, "results/corr_kRatio_epi_selfloops.pdf")
+save_pheatmap_pdf(p, "corr_kRatio_epi_selfloops.pdf")
 
 p<-pheatmap(corrs,   cellwidth=10, cellheight=10, breaks=myBreaks, color = myColor)
-save_pheatmap_pdf(p, "results/ccorr_kRatio_epi_selfloops.pdf")
-
+save_pheatmap_pdf(p, "ccorr_kRatio_epi_selfloops.pdf")
+}
 
 
