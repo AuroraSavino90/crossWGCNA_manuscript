@@ -45,3 +45,7 @@ compare_algorithms(at,b,ct,pv,dir)
 source("scripts/06_datasets_coherence.R")
 LCM_coherence(at,b,ct,pv,dir)
 
+#compute genes in the stroma most strongly correlated with Hippo pathway in the epithelium, using LCM datasets
+source("scripts/07_pathways_netdiff.R")
+net_pathway(at,b,ct,pv,m="netdiff", dir)
+
