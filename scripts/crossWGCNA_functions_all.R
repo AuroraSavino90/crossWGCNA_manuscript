@@ -7,9 +7,6 @@ rm(list= ls())
 #cortype: pearson, spearman, bicor
 #Adj_type: signed, unsigned
 #pval :threshold, weight, none
-#thr: default 0.05
-#beta: default 6 (per avere adjacency=none mettere beta=1)
-###kInt/kExt
 
 Adjacency<-function(data, method=c("netdiff", "selfloop"), comp1="_1",comp2="_2", Adj_type="signed", cortype="spearman", pval="none", thr=0.05, beta=6,
                     sign_list=1, compartment_sel = "none" , selgenes = NA){
@@ -22,6 +19,7 @@ Adjacency<-function(data, method=c("netdiff", "selfloop"), comp1="_1",comp2="_2"
 }
 
 Adjacency_sl <-function(data, comp1="_1",comp2="_2", Adj_type="signed", cortype="spearman", pval="none", thr=0.05, beta=6, sign_list=1, which.sign="none" ){
+  require(WGCNA)
   comp1<-paste(comp1, "$", sep="")
   comp2<-paste(comp2, "$", sep="")
 
@@ -117,6 +115,7 @@ Adjacency_nd <-
            sign_list = 1,
            compartment_sel = "none" ,
            selgenes = NA) {
+    require(WGCNA)
 
     comp1 <- paste(comp1, "$", sep = "")
     comp2 <- paste(comp2, "$", sep = "")
@@ -238,7 +237,7 @@ clusteringWGCNA <-
            TOM = T,
            ds = 1,
            crossOnly = T) {
-
+    require(WGCNA)
     comp1 <- paste(comp1, "$", sep = "")
     comp2 <- paste(comp2, "$", sep = "")
 
@@ -346,7 +345,7 @@ crossWGCNA <-
            sign_list = 1,
            compartment_sel = "none",
            selgenes = NA) {
-
+    require(WGCNA)
     comp1 <- paste(comp1, "$", sep = "")
     comp2 <- paste(comp2, "$", sep = "")
 
@@ -397,7 +396,7 @@ network <-
            sign_list = 1,
            compartment_sel = "none",
            selgenes = NA) {
-
+    require(WGCNA)
     comp1 <- paste(comp1, "$", sep = "")
     comp2 <- paste(comp2, "$", sep = "")
 
@@ -524,7 +523,7 @@ cytoscape_net<-function(adjacency=adj_GSE10797, dataset=data_merged_GSE10797, ge
 
 
 cor_inspect<-function(data=data_merged_GSE88715, gene1, gene2, comp1="_tis1", comp2="_tis2"){
-
+  require(ggplot2)
   df<-data.frame(gene1=c(data[paste(gene1, comp1, sep=""),], data[paste(gene1, comp2, sep=""),], data[paste(gene1, comp1, sep=""),], data[paste(gene1, comp2, sep=""),]),
                  gene2=c(data[paste(gene2, comp1, sep=""),], data[paste(gene2, comp2, sep=""),], data[paste(gene2, comp2, sep=""),], data[paste(gene2, comp2, sep=""),]),
                  compartment=c(rep(c("comp1 vs comp1","comp2 vs comp2","comp1 vs comp2", "comp2 vs comp1"), each=ncol(data)) ))
