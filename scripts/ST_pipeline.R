@@ -68,15 +68,15 @@ class<-rep(NA, ncol(expr_data))
 class[epi_spots]<-"Epi"
 class[stroma_spots]<-"Stroma"
 
-averaged_expr_all_fun<-expr_smooth(expr_data=expr_data, coords=coords, max_dist=5, spots_class=class, sel_class=c("Epi", "Stroma"))
+averaged_expr_all_fun<-ST_expr_smooth(expr_data=expr_data, coords=coords, max_dist=5, spots_class=class, sel_class=c("Epi", "Stroma"))
 
 epi_spots<-which(BC$seurat_clusters %in% c(7, 9:12))
 stroma_spots<-which(BC$seurat_clusters %in% c(0, 2,4,6,8,16,17))
 
 
-sf<-spots_filt(coords, tis1_spots=epi_spots, tis2_spots=stroma_spots)
+sf<-ST_spots_filt(coords, tis1_spots=epi_spots, tis2_spots=stroma_spots)
 
-md<-merged_dataset(sel_spots=sf, coords=coords, averaged_expr_all=averaged_expr_all_fun, var_thr=0.75, comp1="_tis1", comp2="_tis2")
+md<-ST_merged_dataset(sel_spots=sf, coords=coords, averaged_expr_all=averaged_expr_all_fun, var_thr=0.75, comp1="_tis1", comp2="_tis2")
 
 
 adj<-Adjacency(data=md[[1]], method="netdiff", Adj_type="signed", cortype="spearman", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
@@ -137,12 +137,12 @@ dev.off()
 
 
 ##########plot communication
-sp<-boundary_spots(coords, included_spots=md[[2]], tis2_spots = stroma_spots)
+sp<-ST_boundary_spots(coords, included_spots=md[[2]], tis2_spots = stroma_spots)
 ##color midboint by the amount of communication
 library(ggnewscale)
-midpoints<-midpoints_def(coords, sp)
+midpoints<-ST_midpoints_def(coords, sp)
 
-p<-plot_comm(gene1, gene2, averaged_expr_all=averaged_expr_all_fun, coords, included_spots=md[[2]], sel_spots=sp, tis1_spots=epi_spots, tis2_spots=stroma_spots, midpoints)
+p<-ST_plot_comm(gene1, gene2, averaged_expr_all=averaged_expr_all_fun, coords, included_spots=md[[2]], sel_spots=sp, tis1_spots=epi_spots, tis2_spots=stroma_spots, midpoints)
 
 pdf(paste("results/", gene1, gene2, "comm.pdf", sep="_"),6,5)
 print(p)
@@ -150,9 +150,9 @@ dev.off()
 
 
 ########
-p1<-plot_expr(gene1, averaged_expr_all=averaged_expr_all_fun, coords, included_spots=md[[2]],
+p1<-ST_plot_expr(gene1, averaged_expr_all=averaged_expr_all_fun, coords, included_spots=md[[2]],
           tis1_spots=stroma_spots, tis2_spots=epi_spots, midpoints)
-p2<-plot_expr(gene2, averaged_expr_all=averaged_expr_all_fun, coords, included_spots=md[[2]],
+p2<-ST_plot_expr(gene2, averaged_expr_all=averaged_expr_all_fun, coords, included_spots=md[[2]],
               tis1_spots=stroma_spots, tis2_spots=epi_spots, midpoints )
 
 pdf(paste("results/", gene1, "expr.pdf", sep="_"),6,5)
@@ -279,7 +279,7 @@ kwithin<-degrees_mod(data=md[[1]], modules=mods[[2]]$colors, Adj_type = "signed"
 #weighted module expression
 modules<-mods[[2]]$colors
 
-wm<-weighted_mod(modules=mods[[2]]$colors, kwithin, mod_sel=1, averaged_expr_all=averaged_expr_all_fun, comp1="_tis1", comp2="_tis2")
+wm<-ST_weighted_mod(modules=mods[[2]]$colors, kwithin, mod_sel=1, averaged_expr_all=averaged_expr_all_fun, comp1="_tis1", comp2="_tis2")
 
 
 df<-data.frame(x_coord= c(x_bin[epi_spots],x_bin[stroma_spots]),y_coord= c(-(y_bin[epi_spots]), -(y_bin[stroma_spots])),
