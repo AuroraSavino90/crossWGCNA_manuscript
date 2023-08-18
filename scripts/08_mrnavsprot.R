@@ -1,15 +1,22 @@
-library(openxlsx)
+mrna_vs_prot<-function(at,b,ct,pv,m="netdiff", dir){
+  require(openxlsx)
+setwd(dir)
+source("scripts/crossWGCNA_functions_all.R")
 
+##TCGA data
+load("data/TCGA_BRCA_tumor.RData")
+
+#Mertins CPTAC data
 meta <-
   read.xlsx(
-    "/Users/aurora.savino/Library/CloudStorage/OneDrive-Htechnopole/Documents/Work/Projects/Data/CPTAC/BRCA/Mertins/CPTAC_BC_SupplementaryTable01.xlsx",
+    "data/CPTAC_BC_SupplementaryTable01.xlsx",
     1
   )
 rownames(meta) <- meta[, 2]
 
 CPTAC_BRCA <-
   read.csv(
-    "/Users/aurora.savino/Library/CloudStorage/OneDrive-Htechnopole/Documents/Work/Projects/Data/CPTAC/BRCA/Mertins/CPTAC_BC_SupplementaryTable03.csv",
+    "data/CPTAC_BC_SupplementaryTable03.csv",
     sep = ";",
     dec = ","
   )
@@ -25,10 +32,8 @@ colnames(CPTAC_BRCA)[13:92] <-
   gsub('([^-]*)-([^-]*)-.*', '\\1-\\2', colnames(CPTAC_BRCA)[13:92])
 
 ###TCGA
-library(TCGAbiolinks)
-load(
-  "/Users/aurora.savino/Library/CloudStorage/OneDrive-Htechnopole/Documents/Work/Projects/Lanciano/TCGA_BRCA_tumor.RData"
-)
+require(TCGAbiolinks)
+
 colnames(TCGA_tumor) <-
   gsub('([^-]*)-([^-]*)-([^-]*)-.*',
        '\\1-\\2-\\3',
@@ -36,7 +41,7 @@ colnames(TCGA_tumor) <-
 subtype <- TCGAquery_subtype(tumor = "brca")
 colnames(TCGA_tumor) <- gsub("TCGA-", "", colnames(TCGA_tumor))
 
-##tenuti i geni espressi ad alti livelli in almeno 50 pazienti
+##keeping genes expressed in at least 50 patients
 TCGA_tumor <- TCGA_tumor[which(rowSums(TCGA_tumor < 1) <= 1040), ]
 TCGA_tumor <- log2(TCGA_tumor + 1)
 
@@ -46,7 +51,6 @@ CPTAC_BRCA_sel <-
   cbind.data.frame(CPTAC_BRCA[, 11], CPTAC_BRCA[, inboth])
 TCGA_sel <- TCGA_tumor[, inboth]
 
-source("scripts/crossWGCNA_functions_netdiff.R")
 CPTAC_BRCA_sel <-
   changenames(data = CPTAC_BRCA_sel[, -1],
               anno = cbind(rownames(CPTAC_BRCA_sel), CPTAC_BRCA_sel[, 1]))
@@ -68,9 +72,11 @@ rownames(CPTAC_BRCA_sel) <-
   paste(rownames(CPTAC_BRCA_sel), "prot", sep = "_")
 data_merged <- rbind(TCGA_sel, CPTAC_BRCA_sel)
 
+setwd(paste("results/",at,b,ct,pv, sep=""))
 net <-
   network(
     data = data_merged,
+    method=m,
     Adj_type = "signed",
     cortype = "pearson",
     pval = "none",
@@ -79,11 +85,11 @@ net <-
     comp1 = "_mRNA",
     comp2 = "_prot"
   )
-save(net, file = "results/net_mRNAvsprot.RData")
+save(net, file = "net_mRNAvsprot.RData")
 
 
-library(msigdbr)
-library(fgsea)
+require(msigdbr)
+require(fgsea)
 
 m_df = msigdbr(species = "Homo sapiens", category = "C5")
 m_list = m_df %>% split(x = .$gene_symbol, f = .$gs_name)
@@ -92,12 +98,12 @@ coef_gsea <- net$kExt1 / net$kInt1
 names(coef_gsea) <- gsub("_mRNA", "", names(coef_gsea))
 
 fgseaRes <- fgseaMultilevel(m_list, coef_gsea)
-write.xlsx(data.frame(fgseaRes), file = "results/GSEA_mRNA_ratio.xlsx")
-
+write.xlsx(data.frame(fgseaRes), file = "GSEA_mRNA_ratio.xlsx")
 
 
 coef_gsea <- net$kExt2 / net$kInt2
 names(coef_gsea) <- gsub("_prot", "", names(coef_gsea))
 
 fgseaRes <- fgseaMultilevel(m_list, coef_gsea)
-write.xlsx(data.frame(fgseaRes), file = "results/GSEA_prot_ratio.xlsx")
+write.xlsx(data.frame(fgseaRes), file = "GSEA_prot_ratio.xlsx")
+}

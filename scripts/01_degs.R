@@ -1,11 +1,10 @@
-library(WGCNA)
-library(openxlsx)
-library(limma)
-library(pheatmap)
-library(Hmisc)
+LCM_degrees<-function(at,b,ct,pv,m, dir){
+setwd(dir)
+require(openxlsx)
 load("data/metadataAll.RData")
 load("data/datasetsAll.RData")
-source("scripts/crossWGCNA_functions_netdiff.R")
+source("scripts/crossWGCNA_functions_all.R")
+setwd(paste("results/",at,b,ct,pv, sep=""))
 
 ########################
 #Format data as necessary
@@ -28,7 +27,7 @@ epi<-datasetsAll[["GSE5847"]][,epiID]
 
 ###filter genes
 genes<-unique(c(which(apply(stroma,1,var)>=quantile(apply(stroma,1,var),0.25)),
-which(apply(epi,1,var)>=quantile(apply(epi,1,var),0.25))))
+                which(apply(epi,1,var)>=quantile(apply(epi,1,var),0.25))))
 stroma<-stroma[genes,]
 epi<-epi[genes,]
 
@@ -98,13 +97,13 @@ data_merged_GSE14548<-rbind(stroma, epi)
 
 
 #############GSE83591
-load("data/GSE83591.RData")
-GSE83591_meta<-read.csv("data/GSE83591_metadata.txt", sep="\t")
+load("../../data/GSE83591.RData")
+GSE83591_meta<-read.csv("../../data/GSE83591_metadata.txt", sep="\t")
 GSE83591_meta<-t(GSE83591_meta)
 colnames(GSE83591_meta)<-GSE83591_meta[1,]
 GSE83591_meta<-GSE83591_meta[-1,]
 
-GSE83591_meta2<-read.xlsx("data/GSE83591_Correspondence_LCM.xlsx",1)
+GSE83591_meta2<-read.xlsx("../../data/GSE83591_Correspondence_LCM.xlsx",1)
 GSE83591_meta2$ID<-unlist(strsplit(GSE83591_meta2$GSE83591, "_"))[seq(1,109*9,9)]
 
 #reorder based on annotation file
@@ -183,22 +182,24 @@ colnames(epi)<-colnames(stroma)
 data_merged_GSE88715<-rbind(stroma, epi)
 
 
-#######################RUN
+#######################compute degrees for each LCM dataset
 
-Adj_GSE5847<-Adjacency(data=data_merged_GSE5847, Adj_type="signed", cortype="pearson", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
+Adj_GSE5847<-Adjacency(data=data_merged_GSE5847, method=m, Adj_type=at, cortype=ct, pval=pv, thr=0.05, beta=b, comp1="_tis1", comp2="_tis2")
 degrees_GSE5847<-degrees(A=Adj_GSE5847, comp1="_tis1", comp2="_tis2")
-Adj_GSE10797<-Adjacency(data=data_merged_GSE10797, Adj_type="signed", cortype="pearson", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
+Adj_GSE10797<-Adjacency(data=data_merged_GSE10797, method=m, Adj_type=at, cortype=ct, pval=pv, thr=0.05, beta=b, comp1="_tis1", comp2="_tis2")
 degrees_GSE10797<-degrees(A=Adj_GSE10797, comp1="_tis1", comp2="_tis2")
-Adj_GSE14548<-Adjacency(data=data_merged_GSE14548, Adj_type="signed", cortype="pearson", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
+Adj_GSE14548<-Adjacency(data=data_merged_GSE14548, method=m, Adj_type=at, cortype=ct, pval=pv, thr=0.05, beta=b, comp1="_tis1", comp2="_tis2")
 degrees_GSE14548<-degrees(A=Adj_GSE14548, comp1="_tis1", comp2="_tis2")
-Adj_GSE83591<-Adjacency(data=data_merged_GSE83591, Adj_type="signed", cortype="pearson", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
+Adj_GSE83591<-Adjacency(data=data_merged_GSE83591, method=m, Adj_type=at, cortype=ct, pval=pv, thr=0.05, beta=b, comp1="_tis1", comp2="_tis2")
 degrees_GSE83591<-degrees(A=Adj_GSE83591, comp1="_tis1", comp2="_tis2")
-Adj_GSE68744<-Adjacency(data=data_merged_GSE68744, Adj_type="signed", cortype="pearson", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
+Adj_GSE68744<-Adjacency(data=data_merged_GSE68744, method=m, Adj_type=at, cortype=ct, pval=pv, thr=0.05, beta=b, comp1="_tis1", comp2="_tis2")
 degrees_GSE68744<-degrees(A=Adj_GSE68744, comp1="_tis1", comp2="_tis2")
-Adj_GSE88715<-Adjacency(data=data_merged_GSE88715, Adj_type="signed", cortype="pearson", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
+Adj_GSE88715<-Adjacency(data=data_merged_GSE88715, method=m, Adj_type=at, cortype=ct, pval=pv, thr=0.05, beta=b, comp1="_tis1", comp2="_tis2")
 degrees_GSE88715<-degrees(A=Adj_GSE88715, comp1="_tis1", comp2="_tis2")
 
 degs<-list(degrees_GSE5847, degrees_GSE10797, degrees_GSE14548,
            degrees_GSE83591, degrees_GSE68744, degrees_GSE88715)
 
-save(degs, file="results/degs_3rd_netdiff.RData")
+#save the list of degrees for all LCM datasets
+save(degs, file=paste("degs_3rd_", m, ".RData", sep=""))
+}
