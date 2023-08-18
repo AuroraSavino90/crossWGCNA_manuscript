@@ -18,7 +18,9 @@ Adjacency<-function(data, method=c("netdiff", "selfloop"), comp1="_1",comp2="_2"
   return(A)
 }
 
-Adjacency_sl <-function(data, comp1="_1",comp2="_2", Adj_type="signed", cortype="spearman", pval="none", thr=0.05, beta=6, sign_list=1, which.sign="none" ){
+Adjacency_sl <-function(data, comp1="_1",comp2="_2", Adj_type="signed", cortype="spearman", pval="none", thr=0.05, beta=6, sign_list = 1,
+                        compartment_sel = "none" ,
+                        selgenes = NA){
   require(WGCNA)
   comp1<-paste(comp1, "$", sep="")
   comp2<-paste(comp2, "$", sep="")
