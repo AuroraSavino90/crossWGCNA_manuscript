@@ -1,10 +1,10 @@
 setwd("~/crossWGCNA/")
-dir<-"/home/aurora.savino/crossWGCNA/"
+dir<-"./home/aurora.savino/crossWGCNA/"
 
 ##Setting the parameters
 at<-"signed"#adjacency type
 ct<-"spearman"#correlation type
-pv<-0.05#pvaluje
+pv<-0.05#pvalue
 b<-6#beta
 
 dir.create(paste("results/",at,b,ct,pv, sep=""))
@@ -45,10 +45,6 @@ compare_algorithms(at,b,ct,pv,dir)
 #compare the coherence of kratios between different LCM datasets
 source("scripts/06_datasets_coherence.R")
 LCM_coherence(at,b,ct,pv,dir)
-
-#compute genes in the stroma most strongly correlated with Hippo pathway in the epithelium, using LCM datasets
-source("scripts/07_pathways_netdiff.R")
-net_pathway(at,b,ct,pv,m="netdiff", dir)
 
 #apply crossWGCNA to inter-regulatory-layer interactions
 source("scripts/08_mrnavsprot.R")

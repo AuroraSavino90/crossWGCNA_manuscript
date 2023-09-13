@@ -7,9 +7,10 @@ require(data.table)
 require(org.Hs.eg.db)
 
 setwd(dir)
-source("scripts/crossWGCNA_functions_all.R")
-
+source("scripts/crossWGCNA.R")
 setwd(paste("results/",at,b,ct,pv, sep=""))
+
+###load degrees obtained from 01_degs.R
 load(paste("degs_3rd_", m, ".RData", sep=""))
 
 names(degs) <- c("GSE5847",

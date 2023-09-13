@@ -1,23 +1,19 @@
 GSE161529_degs<-function(at,b,ct,pv, dir){
 setwd(dir)
-  source("/scripts/crossWGCNA_functions_all.R")
+  source("scripts/crossWGCNA.R")
 
 #load the pseudo-bulk data
-load(paste(dir, "/GSE161529/averagedEpiTNBC.RData", sep=""))
-load(paste(dir, "/GSE161529/averagedEpiHER2.RData"))
-load(paste(dir, "/GSE161529/averagedEpiER.RData"))
-load(paste(dir, "/GSE161529/averagedStromaTNBC.RData"))
-load(paste(dir, "/GSE161529/averagedStromaHER2.RData"))
-load(paste(dir, "/GSE161529/averagedStromaER.RData"))
-load(paste(dir, "/GSE161529/TNmerge.RData"))
+load(paste(dir, "/data/GSE161529/averagedEpiTNBC.RData", sep=""))
+load(paste(dir, "/data/GSE161529/averagedEpiHER2.RData", sep=""))
+load(paste(dir, "/data/GSE161529/averagedEpiER.RData", sep=""))
+load(paste(dir, "/data/GSE161529/averagedStromaTNBC.RData", sep=""))
+load(paste(dir, "/data/GSE161529/averagedStromaHER2.RData", sep=""))
+load(paste(dir, "/data/GSE161529/averagedStromaER.RData", sep=""))
 
 setwd(paste("results/",at,b,ct,pv, sep=""))
 
 averagedEpi<-cbind(averagedEpiTNBC, averagedEpiHER2, averagedEpiER)
 averagedStroma<-cbind(averagedStromaTNBC, averagedStromaHER2, averagedStromaER)
-
-rownames(averagedEpi)<-rownames(TNmerge)
-rownames(averagedStroma)<-rownames(TNmerge)
 
 ###filtering data
 ind<-which(colSums(is.na(averagedEpi))==0 & colSums(is.na(averagedStroma))==0)
@@ -39,10 +35,10 @@ colnames(epi)<-colnames(stroma)
 data_merged<-rbind(stroma, epi)
 
 #crossWGCNA functions
-degsc<-network(data=data_merged, method="netdiff", Adj_type="signed", cortype="pearson", pval="none", thr=0.05, beta=6, comp1="_1", comp2="_2")
+degsc<-crossWGCNA(data=data_merged, method="netdiff", doClusters=F, Adj_type=at, cortype=ct, pval="none", thr=pv, beta=b, comp1="_1", comp2="_2", )
 save(degsc, file="degsc_netdiff.RData")
 
-degsc<-network(data=data_merged, method="selfloop", Adj_type="signed", cortype="pearson", pval="none", thr=0.05, beta=6, comp1="_1", comp2="_2")
-save(degsc, file="degsc_selfloops.RData")
+degsc<-crossWGCNA(data=data_merged, method="selfloop", doClusters=F, Adj_type=at, cortype=ct, pval="none", thr=pv, beta=b, comp1="_1", comp2="_2")
+save(degsc, file="degsc_selfloop.RData")
 
 }

@@ -1,5 +1,5 @@
 ##10x dataset
-source("scripts/crossWGCNA_functions_all.R")
+source("scripts/crossWGCNA.R")
 
 library(WGCNA)
 library(Seurat)
@@ -57,7 +57,7 @@ pdf("results/vlplot_epi3.pdf", 12,6)
 VlnPlot(BC, features = c("FOXA1", "GATA3", "MUC1", "CD24", "KIT", "GABRP"), pt.size = 0.1, group.by="seurat_clusters")
 dev.off()
 
-coords<-spots_coords(BC)
+coords<-ST_spots_coords(BC)
 
 epi_spots<-which(BC$seurat_clusters %in% c(3, 7, 9:15))
 stroma_spots<-which(BC$seurat_clusters %in% c(0, 1:2,4:6,8,16,17))
@@ -69,6 +69,7 @@ class[epi_spots]<-"Epi"
 class[stroma_spots]<-"Stroma"
 
 averaged_expr_all_fun<-ST_expr_smooth(expr_data=expr_data, coords=coords, max_dist=5, spots_class=class, sel_class=c("Epi", "Stroma"))
+save(averaged_expr_all_fun, file="results/averaged_expr_all_fun.RData")
 
 epi_spots<-which(BC$seurat_clusters %in% c(7, 9:12))
 stroma_spots<-which(BC$seurat_clusters %in% c(0, 2,4,6,8,16,17))
@@ -82,12 +83,11 @@ md<-ST_merged_dataset(sel_spots=sf, coords=coords, averaged_expr_all=averaged_ex
 adj<-Adjacency(data=md[[1]], method="netdiff", Adj_type="signed", cortype="spearman", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
 save(adj, file="results/ST_adj_pipeline.RData")
 
-net<-network(data=md[[1]], method="netdiff", Adj_type="signed", cortype="spearman", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
+net<-crossWGCNA(data=md[[1]], method="netdiff", doClusters = T, Adj_type="signed", cortype="spearman", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
 save(net, file="results/ST_net_pipeline.RData")
 
-mods<-crossWGCNA(data=md[[1]], method="netdiff", Adj_type="signed", cortype="spearman", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
-save(mods, file="results/ST_mods_pipeline.RData")
-
+mods<-net[[2]]
+net<-net[[1]]
 
 #functional enrichment of the most communicative genes
 #######################
@@ -211,7 +211,7 @@ dev.off()
 
 
 #comp1 should be set as the component where the gene was measured
-df<-cytoscape_net(adjacency = adj, dataset=as.matrix(md[[1]]), gene="COL6A2", comp1="tis2", comp2="tis1", num=10)
+df<-cytoscape_net(A = adj, data=as.matrix(md[[1]]), gene="COL6A2", comp1="tis2", comp2="tis1", num=10)
 df$Target<-factor(df$Target, levels=df$Target[df$Edge_type=="inter"][order(df$Weight[df$Edge_type=="inter"], decreasing = T)])
 pdf("results/ST_COL6A2_top10_corrs_s.pdf", 8,7 )
 ggplot(df, aes(x=Target, y=Weight))+geom_col()+facet_grid(Edge_type~.)+theme_classic()
@@ -222,7 +222,7 @@ dev.off()
 #### GO for modules
 #################
 library(clusterProfiler)
-modules<-mods[[2]]$colors
+modules<-mods$colors
 
 #GO for epi
 background_1<-gsub("_tis1", "", names(modules)[grep("_tis1",names(modules))])
@@ -241,7 +241,7 @@ for(i in 1:length(mod_sel)){
                                       universe=background_1, OrgDb="org.Hs.eg.db")
 
                 if(nrow(summary(ego_1[[i]]))>0){
-                        write.xlsx( summary(ego_1[[i]]) , paste("Epi", "ST", mod_sel[i], "GO_s.xlsx", sep="_"))
+                        write.xlsx( summary(ego_1[[i]]) , paste("Epi", "ST", mod_sel[i], "GO_s_Raf.xlsx", sep="_"))
                 }
         }
 }
@@ -261,14 +261,14 @@ for(i in 1:length(mod_sel)){
                                       universe=background_2, OrgDb="org.Hs.eg.db")
 
                 if(nrow(summary(ego_2[[i]]))>0){
-                        write.xlsx( summary(ego_2[[i]]) , paste("Stroma", "ST", mod_sel[i], "GO_s.xlsx", sep="_"))
+                        write.xlsx( summary(ego_2[[i]]) , paste("Stroma", "ST", mod_sel[i], "GO_s_Raf.xlsx", sep="_"))
                 }
 
         }
 }
 
 
-kwithin<-degrees_mod(data=md[[1]], modules=mods[[2]]$colors, Adj_type = "signed",
+kwithin<-degrees_mod(data=md[[1]], modules=mods$colors, Adj_type = "signed",
                      cortype = "spearman",
                      pval = "none",
                      thr = 0.05,
@@ -277,9 +277,9 @@ kwithin<-degrees_mod(data=md[[1]], modules=mods[[2]]$colors, Adj_type = "signed"
                      comp2 = "_tis2")
 
 #weighted module expression
-modules<-mods[[2]]$colors
+modules<-mods$colors
 
-wm<-ST_weighted_mod(modules=mods[[2]]$colors, kwithin, mod_sel=1, averaged_expr_all=averaged_expr_all_fun, comp1="_tis1", comp2="_tis2")
+wm<-ST_weighted_mod(modules=mods$colors, kwithin, mod_sel=1, averaged_expr_all=averaged_expr_all_fun, comp1="_tis1", comp2="_tis2")
 
 
 df<-data.frame(x_coord= c(x_bin[epi_spots],x_bin[stroma_spots]),y_coord= c(-(y_bin[epi_spots]), -(y_bin[stroma_spots])),
