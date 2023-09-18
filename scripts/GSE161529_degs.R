@@ -1,4 +1,4 @@
-GSE161529_degs<-function(at,b,ct,pv, dir){
+GSE161529_degs<-function(at,b,ct, dir){
 setwd(dir)
   source("scripts/crossWGCNA.R")
 
@@ -10,7 +10,7 @@ load(paste(dir, "/data/GSE161529/averagedStromaTNBC.RData", sep=""))
 load(paste(dir, "/data/GSE161529/averagedStromaHER2.RData", sep=""))
 load(paste(dir, "/data/GSE161529/averagedStromaER.RData", sep=""))
 
-setwd(paste("results/",at,b,ct,pv, sep=""))
+setwd(paste("results/",at,b,ct, sep=""))
 
 averagedEpi<-cbind(averagedEpiTNBC, averagedEpiHER2, averagedEpiER)
 averagedStroma<-cbind(averagedStromaTNBC, averagedStromaHER2, averagedStromaER)

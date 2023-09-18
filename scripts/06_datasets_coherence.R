@@ -1,5 +1,5 @@
-LCM_coherence<-function(at,b,ct,pv,dir){
-    setwd(paste("results/",at,b,ct,pv, sep=""))
+LCM_coherence<-function(at,b,ct,dir){
+    setwd(paste("results/",at,b,ct, sep=""))
 require(pheatmap)
 require(ggpubr)
 

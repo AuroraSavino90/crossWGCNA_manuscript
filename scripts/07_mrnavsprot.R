@@ -1,4 +1,4 @@
-mrna_vs_prot<-function(at,b,ct,pv,m="netdiff", dir){
+mrna_vs_prot<-function(at,b,ct,m="netdiff", dir){
   require(openxlsx)
   require(WGCNA)
 setwd(dir)
@@ -73,7 +73,7 @@ rownames(CPTAC_BRCA_sel) <-
   paste(rownames(CPTAC_BRCA_sel), "prot", sep = "_")
 data_merged <- rbind(TCGA_sel, CPTAC_BRCA_sel)
 
-setwd(paste("results/",at,b,ct,pv, sep=""))
+setwd(paste("results/",at,b,ct,sep=""))
 net <-
   crossWGCNA(
     data = data_merged,

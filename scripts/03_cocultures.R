@@ -1,12 +1,12 @@
-LCM_vs_cocultures<-function(at,b,ct,pv,m, dir){
+LCM_vs_cocultures<-function(at,b,ct,m, dir){
 require(ggplot2)
 require(fgsea)
 require(data.table)
 
 setwd(dir)
 
-load("data/CAFs_cocultures.RData")
-setwd(paste("results/",at,b,ct,pv, sep=""))
+load("data/CAFs_cocultures_small.RData")
+setwd(paste("results/",at,b,ct, sep=""))
 
 load(paste("degs_3rd_", m, ".RData", sep=""))
 

@@ -1,11 +1,11 @@
 
-compare_algorithms<-function(at,b,ct,pv,dir){
+compare_algorithms<-function(at,b,ct,dir){
   setwd(dir)
   require(openxlsx)
   load("data/metadataAll.RData")
   load("data/datasetsAll.RData")
   source("scripts/crossWGCNA.R")
-  setwd(paste("results/",at,b,ct,pv, sep=""))
+  setwd(paste("results/",at,b,ct, sep=""))
 
 #Datasets
 ###dataset GSE5847
@@ -177,21 +177,23 @@ rownames(epi)<-paste(rownames(epi), "tis2", sep="_")
 colnames(epi)<-colnames(stroma)
 data_merged_GSE88715<-rbind(stroma, epi)
 
+#####################################################################
+#######################compute crossWGCNA networks
+#####################################################################
 
-#######################RUN
-net_GSE5847<-crossWGCNA(data=data_merged_GSE5847, method="netdiff", Adj_type=at, cortype=ct, pval="none", thr=pv, beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
-net_GSE10797<-crossWGCNA(data=data_merged_GSE10797,method="netdiff", Adj_type=at, cortype=ct, pval="none", thr=pv, beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
-net_GSE14548<-crossWGCNA(data=data_merged_GSE14548,method="netdiff", Adj_type=at, cortype=ct, pval="none", thr=pv, beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
-net_GSE83591<-crossWGCNA(data=data_merged_GSE83591,method="netdiff", Adj_type=at, cortype=ct, pval="none", thr=pv, beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
-net_GSE68744<-crossWGCNA(data=data_merged_GSE68744,method="netdiff", Adj_type=at, cortype=ct, pval="none", thr=pv, beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
-net_GSE88715<-crossWGCNA(data=data_merged_GSE88715, method="netdiff",Adj_type=at, cortype=ct, pval="none", thr=pv, beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
+net_GSE5847<-crossWGCNA(data=data_merged_GSE5847, method="netdiff", Adj_type=at, cortype=ct, pval="none", beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
+net_GSE10797<-crossWGCNA(data=data_merged_GSE10797,method="netdiff", Adj_type=at, cortype=ct, pval="none",  beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
+net_GSE14548<-crossWGCNA(data=data_merged_GSE14548,method="netdiff", Adj_type=at, cortype=ct, pval="none",  beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
+net_GSE83591<-crossWGCNA(data=data_merged_GSE83591,method="netdiff", Adj_type=at, cortype=ct, pval="none",  beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
+net_GSE68744<-crossWGCNA(data=data_merged_GSE68744,method="netdiff", Adj_type=at, cortype=ct, pval="none",  beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
+net_GSE88715<-crossWGCNA(data=data_merged_GSE88715, method="netdiff",Adj_type=at, cortype=ct, pval="none",  beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
 
-net_GSE5847_sl<-crossWGCNA(data=data_merged_GSE5847,method="selfloop", Adj_type=at, cortype=ct, pval="none", thr=pv, beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
-net_GSE10797_sl<-crossWGCNA(data=data_merged_GSE10797,method="selfloop",  Adj_type=at, cortype=ct, pval="none", thr=pv, beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
-net_GSE14548_sl<-crossWGCNA(data=data_merged_GSE14548,method="selfloop",  Adj_type=at, cortype=ct, pval="none", thr=pv, beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
-net_GSE83591_sl<-crossWGCNA(data=data_merged_GSE83591, method="selfloop", Adj_type=at, cortype=ct, pval="none", thr=pv, beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
-net_GSE68744_sl<-crossWGCNA(data=data_merged_GSE68744, method="selfloop", Adj_type=at, cortype=ct, pval="none", thr=pv, beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
-net_GSE88715_sl<-crossWGCNA(data=data_merged_GSE88715, method="selfloop", Adj_type=at, cortype=ct, pval="none", thr=pv, beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
+net_GSE5847_sl<-crossWGCNA(data=data_merged_GSE5847,method="selfloop", Adj_type=at, cortype=ct, pval="none",  beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
+net_GSE10797_sl<-crossWGCNA(data=data_merged_GSE10797,method="selfloop",  Adj_type=at, cortype=ct, pval="none", beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
+net_GSE14548_sl<-crossWGCNA(data=data_merged_GSE14548,method="selfloop",  Adj_type=at, cortype=ct, pval="none", beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
+net_GSE83591_sl<-crossWGCNA(data=data_merged_GSE83591, method="selfloop", Adj_type=at, cortype=ct, pval="none", beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
+net_GSE68744_sl<-crossWGCNA(data=data_merged_GSE68744, method="selfloop", Adj_type=at, cortype=ct, pval="none",  beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
+net_GSE88715_sl<-crossWGCNA(data=data_merged_GSE88715, method="selfloop", Adj_type=at, cortype=ct, pval="none",  beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
 
 
 prop_same_genes<-function(net){

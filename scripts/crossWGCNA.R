@@ -1,3 +1,7 @@
+require(crossWGCNA)
+require(ggplot2)
+require(ggnewscale)
+
 rm_selfloop <- function(A,comp1=comp1,comp2=comp2,verbose=TRUE)
 {
   if(verbose) cat("Removing self-loops only...\n")

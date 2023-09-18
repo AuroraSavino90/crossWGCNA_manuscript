@@ -1,4 +1,4 @@
-LCM_GSEA<-function(at,b,ct,pv,m, dir){
+LCM_GSEA<-function(at,b,ct,m, dir){
   require(openxlsx)
 require(pheatmap)
 require(msigdbr)
@@ -8,7 +8,7 @@ require(org.Hs.eg.db)
 
 setwd(dir)
 source("scripts/crossWGCNA.R")
-setwd(paste("results/",at,b,ct,pv, sep=""))
+setwd(paste("results/",at,b,ct, sep=""))
 
 ###load degrees obtained from 01_degs.R
 load(paste("degs_3rd_", m, ".RData", sep=""))

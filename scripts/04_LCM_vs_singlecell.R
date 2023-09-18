@@ -1,4 +1,4 @@
-LCM_vs_sc<-function(at,b,ct,pv,m, dir){
+LCM_vs_sc<-function(at,b,ct,m, dir){
 require(openxlsx)
 require(ggplot2)
 require(ggpubr)
@@ -9,7 +9,7 @@ require(data.table)
 
 setwd(dir)
 
-setwd(paste("results/",at,b,ct,pv, sep=""))
+setwd(paste("results/",at,b,ct, sep=""))
 
 #load degrees computed in 01_degs.R and GSE161529_degs.R
 load(paste("degs_3rd_", m, ".RData", sep=""))
