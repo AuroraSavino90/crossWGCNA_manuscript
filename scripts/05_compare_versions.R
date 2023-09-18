@@ -1,11 +1,11 @@
 
-compare_algorithms<-function(at,b,ct,pv,dir){
+compare_algorithms<-function(at,b,ct,dir){
   setwd(dir)
   require(openxlsx)
   load("data/metadataAll.RData")
   load("data/datasetsAll.RData")
-  source("scripts/crossWGCNA_functions_all.R")
-  setwd(paste("results/",at,b,ct,pv, sep=""))
+  source("scripts/crossWGCNA.R")
+  setwd(paste("results/",at,b,ct, sep=""))
 
 #Datasets
 ###dataset GSE5847
@@ -177,22 +177,23 @@ rownames(epi)<-paste(rownames(epi), "tis2", sep="_")
 colnames(epi)<-colnames(stroma)
 data_merged_GSE88715<-rbind(stroma, epi)
 
+#####################################################################
+#######################compute crossWGCNA networks
+#####################################################################
 
-#######################RUN
-net_GSE5847<-crossWGCNA(data=data_merged_GSE5847, method="netdiff", Adj_type="signed", cortype="pearson", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
-net_GSE10797<-crossWGCNA(data=data_merged_GSE10797,method="netdiff", Adj_type="signed", cortype="pearson", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
-net_GSE14548<-crossWGCNA(data=data_merged_GSE14548,method="netdiff", Adj_type="signed", cortype="pearson", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
-net_GSE83591<-crossWGCNA(data=data_merged_GSE83591,method="netdiff", Adj_type="signed", cortype="pearson", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
-net_GSE68744<-crossWGCNA(data=data_merged_GSE68744,method="netdiff", Adj_type="signed", cortype="pearson", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
-net_GSE88715<-crossWGCNA(data=data_merged_GSE88715, method="netdiff",Adj_type="signed", cortype="pearson", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
+net_GSE5847<-crossWGCNA(data=data_merged_GSE5847, method="netdiff", Adj_type=at, cortype=ct, pval="none", beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
+net_GSE10797<-crossWGCNA(data=data_merged_GSE10797,method="netdiff", Adj_type=at, cortype=ct, pval="none",  beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
+net_GSE14548<-crossWGCNA(data=data_merged_GSE14548,method="netdiff", Adj_type=at, cortype=ct, pval="none",  beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
+net_GSE83591<-crossWGCNA(data=data_merged_GSE83591,method="netdiff", Adj_type=at, cortype=ct, pval="none",  beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
+net_GSE68744<-crossWGCNA(data=data_merged_GSE68744,method="netdiff", Adj_type=at, cortype=ct, pval="none",  beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
+net_GSE88715<-crossWGCNA(data=data_merged_GSE88715, method="netdiff",Adj_type=at, cortype=ct, pval="none",  beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
 
-source("scripts/crossWGCNA_functions_selfloops.R")
-net_GSE5847_old<-crossWGCNA(data=data_merged_GSE5847,method="selfloop", Adj_type="signed", cortype="pearson", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
-net_GSE10797_old<-crossWGCNA(data=data_merged_GSE10797,method="selfloop",  Adj_type="signed", cortype="pearson", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
-net_GSE14548_old<-crossWGCNA(data=data_merged_GSE14548,method="selfloop",  Adj_type="signed", cortype="pearson", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
-net_GSE83591_old<-crossWGCNA(data=data_merged_GSE83591, method="selfloop", Adj_type="signed", cortype="pearson", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
-net_GSE68744_old<-crossWGCNA(data=data_merged_GSE68744, method="selfloop", Adj_type="signed", cortype="pearson", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
-net_GSE88715_old<-crossWGCNA(data=data_merged_GSE88715, method="selfloop", Adj_type="signed", cortype="pearson", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
+net_GSE5847_sl<-crossWGCNA(data=data_merged_GSE5847,method="selfloop", Adj_type=at, cortype=ct, pval="none",  beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
+net_GSE10797_sl<-crossWGCNA(data=data_merged_GSE10797,method="selfloop",  Adj_type=at, cortype=ct, pval="none", beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
+net_GSE14548_sl<-crossWGCNA(data=data_merged_GSE14548,method="selfloop",  Adj_type=at, cortype=ct, pval="none", beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
+net_GSE83591_sl<-crossWGCNA(data=data_merged_GSE83591, method="selfloop", Adj_type=at, cortype=ct, pval="none", beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
+net_GSE68744_sl<-crossWGCNA(data=data_merged_GSE68744, method="selfloop", Adj_type=at, cortype=ct, pval="none",  beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
+net_GSE88715_sl<-crossWGCNA(data=data_merged_GSE88715, method="selfloop", Adj_type=at, cortype=ct, pval="none",  beta=b, comp1="_tis1", comp2="_tis2", doClusters=TRUE, ds=2)
 
 
 prop_same_genes<-function(net){
@@ -227,27 +228,27 @@ prop_same_genes(net_GSE83591),
 prop_same_genes(net_GSE68744),
 prop_same_genes(net_GSE88715)))))
 
-df_old<-data.frame(proportion=c(prop_same_genes(net_GSE5847_old),
-prop_same_genes(net_GSE10797_old),
-prop_same_genes(net_GSE14548_old),
-prop_same_genes(net_GSE83591_old),
-prop_same_genes(net_GSE68744_old),
-prop_same_genes(net_GSE88715_old)),
-dataset=c(rep("GSE5847", length(prop_same_genes(net_GSE5847_old))),
-rep("GSE10797", length(prop_same_genes(net_GSE10797_old))),
-rep("GSE14548", length(prop_same_genes(net_GSE14548_old))),
-rep("GSE83591", length(prop_same_genes(net_GSE83591_old))),
-rep("GSE68744", length(prop_same_genes(net_GSE68744_old))),
-rep("GSE88715", length(prop_same_genes(net_GSE88715_old)))
+df_sl<-data.frame(proportion=c(prop_same_genes(net_GSE5847_sl),
+prop_same_genes(net_GSE10797_sl),
+prop_same_genes(net_GSE14548_sl),
+prop_same_genes(net_GSE83591_sl),
+prop_same_genes(net_GSE68744_sl),
+prop_same_genes(net_GSE88715_sl)),
+dataset=c(rep("GSE5847", length(prop_same_genes(net_GSE5847_sl))),
+rep("GSE10797", length(prop_same_genes(net_GSE10797_sl))),
+rep("GSE14548", length(prop_same_genes(net_GSE14548_sl))),
+rep("GSE83591", length(prop_same_genes(net_GSE83591_sl))),
+rep("GSE68744", length(prop_same_genes(net_GSE68744_sl))),
+rep("GSE88715", length(prop_same_genes(net_GSE88715_sl)))
 ),
-algorithm=rep("self loops", length(c(prop_same_genes(net_GSE5847_old),
-prop_same_genes(net_GSE10797_old),
-prop_same_genes(net_GSE14548_old),
-prop_same_genes(net_GSE83591_old),
-prop_same_genes(net_GSE68744_old),
-prop_same_genes(net_GSE88715_old)))))
+algorithm=rep("self loops", length(c(prop_same_genes(net_GSE5847_sl),
+prop_same_genes(net_GSE10797_sl),
+prop_same_genes(net_GSE14548_sl),
+prop_same_genes(net_GSE83591_sl),
+prop_same_genes(net_GSE68744_sl),
+prop_same_genes(net_GSE88715_sl)))))
 
-df_tot<-rbind.data.frame(df_old, df_new)
+df_tot<-rbind.data.frame(df_sl, df_new)
 
 pdf("algorithm_compare.pdf", 10, 5)
 ggplot(df_tot, aes(x=dataset, y=proportion, fill=algorithm))+geom_boxplot()+theme_classic()
@@ -258,24 +259,24 @@ dev.off()
 ##Compare adjacencies: one example
 ######
 
-adj_GSE5847<-Adjacency(data=data_merged_GSE5847, method="netdiff", Adj_type="signed", cortype="pearson", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
-adj_GSE5847_old<-Adjacency(data=data_merged_GSE5847, method="selfloop", Adj_type="signed", cortype="pearson", pval="none", thr=0.05, beta=6, comp1="_tis1", comp2="_tis2")
+adj_GSE5847<-Adjacency(data=data_merged_GSE5847, method="netdiff", Adj_type=at, cortype=ct, pval="none", thr=pv, beta=b, comp1="_tis1", comp2="_tis2")
+adj_GSE5847_sl<-Adjacency(data=data_merged_GSE5847, method="selfloop", Adj_type=at, cortype=ct, pval="none", thr=pv, beta=b, comp1="_tis1", comp2="_tis2")
 
-##the correlaton of a gene with the others between and within tissues is similar
+##the correlation of a gene with the others between and within tissues is similar
 #because in both tissues it is involved in the same pathways
 
 i<-10
-corr_tis1<-adj_GSE5847_old[i,grep("tis1", colnames(adj_GSE5847_old))][-i]
-corr_tis2<-adj_GSE5847_old[i,grep("tis2", colnames(adj_GSE5847_old))][-i]
+corr_tis1<-adj_GSE5847_sl[i,grep("tis1", colnames(adj_GSE5847_sl))][-i]
+corr_tis2<-adj_GSE5847_sl[i,grep("tis2", colnames(adj_GSE5847_sl))][-i]
 cor(corr_tis1, corr_tis2)
 pdf("Example_cor_selfloops.pdf",5,5)
 plot(corr_tis1, corr_tis2, pch=19)
 dev.off()
 
 cor_tot<-c()
-for(i in 1:(nrow(adj_GSE5847_old)/2)){
-  corr_tis1<-adj_GSE5847_old[i,grep("tis1", colnames(adj_GSE5847_old))][-i]
-corr_tis2<-adj_GSE5847_old[i,grep("tis2", colnames(adj_GSE5847_old))][-i]
+for(i in 1:(nrow(adj_GSE5847_sl)/2)){
+  corr_tis1<-adj_GSE5847_sl[i,grep("tis1", colnames(adj_GSE5847_sl))][-i]
+corr_tis2<-adj_GSE5847_sl[i,grep("tis2", colnames(adj_GSE5847_sl))][-i]
 cor_tot<-c(cor_tot, cor(corr_tis1, corr_tis2))
 }
 

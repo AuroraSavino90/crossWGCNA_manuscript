@@ -1,5 +1,5 @@
-LCM_coherence<-function(at,b,ct,pv,dir){
-    setwd(paste("results/",at,b,ct,pv, sep=""))
+LCM_coherence<-function(at,b,ct,dir){
+    setwd(paste("results/",at,b,ct, sep=""))
 require(pheatmap)
 require(ggpubr)
 
@@ -15,7 +15,7 @@ save_pheatmap_pdf <- function(x, filename, width=5, height=5) {
 
 load("degs_3rd_netdiff.RData")
 degs_netdiff<-degs
-load("degs_3rd_selfloops.RData")
+load("degs_3rd_selfloop.RData")
 
 
 names(degs) <- c("GSE5847",

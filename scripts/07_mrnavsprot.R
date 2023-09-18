@@ -1,7 +1,8 @@
-mrna_vs_prot<-function(at,b,ct,pv,m="netdiff", dir){
+mrna_vs_prot<-function(at,b,ct,m="netdiff", dir){
   require(openxlsx)
+  require(WGCNA)
 setwd(dir)
-source("scripts/crossWGCNA_functions_all.R")
+source("scripts/crossWGCNA.R")
 
 ##TCGA data
 load("data/TCGA_BRCA_tumor.RData")
@@ -72,18 +73,19 @@ rownames(CPTAC_BRCA_sel) <-
   paste(rownames(CPTAC_BRCA_sel), "prot", sep = "_")
 data_merged <- rbind(TCGA_sel, CPTAC_BRCA_sel)
 
-setwd(paste("results/",at,b,ct,pv, sep=""))
+setwd(paste("results/",at,b,ct,sep=""))
 net <-
-  network(
+  crossWGCNA(
     data = data_merged,
     method=m,
-    Adj_type = "signed",
-    cortype = "pearson",
+    Adj_type = at,
+    cortype = ct,
     pval = "none",
     thr = 0.05,
-    beta = 6,
+    beta = b,
     comp1 = "_mRNA",
-    comp2 = "_prot"
+    comp2 = "_prot",
+    doTOM=F
   )
 save(net, file = "net_mRNAvsprot.RData")
 
@@ -94,14 +96,14 @@ require(fgsea)
 m_df = msigdbr(species = "Homo sapiens", category = "C5")
 m_list = m_df %>% split(x = .$gene_symbol, f = .$gs_name)
 
-coef_gsea <- net$kExt1 / net$kInt1
+coef_gsea <- net[[1]]$kExt1 / net[[1]]$kInt1
 names(coef_gsea) <- gsub("_mRNA", "", names(coef_gsea))
 
 fgseaRes <- fgseaMultilevel(m_list, coef_gsea)
 write.xlsx(data.frame(fgseaRes), file = "GSEA_mRNA_ratio.xlsx")
 
 
-coef_gsea <- net$kExt2 / net$kInt2
+coef_gsea <- net[[1]]$kExt2 / net[[1]]$kInt2
 names(coef_gsea) <- gsub("_prot", "", names(coef_gsea))
 
 fgseaRes <- fgseaMultilevel(m_list, coef_gsea)

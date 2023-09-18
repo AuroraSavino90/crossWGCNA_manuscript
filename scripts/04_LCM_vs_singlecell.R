@@ -1,21 +1,25 @@
-LCM_vs_sc<-function(at,b,ct,pv,m, dir){
-  require(openxlsx)
+LCM_vs_sc<-function(at,b,ct,m, dir){
+require(openxlsx)
 require(ggplot2)
 require(ggpubr)
 
+require(msigdbr)
+require(fgsea)
+require(data.table)
+
 setwd(dir)
 
-setwd(paste("results/",at,b,ct,pv, sep=""))
+setwd(paste("results/",at,b,ct, sep=""))
 
+#load degrees computed in 01_degs.R and GSE161529_degs.R
 load(paste("degs_3rd_", m, ".RData", sep=""))
 load(paste("degsc_", m, ".RData", sep=""))
 
 names(degs)<-c("GSE5847", "GSE10797", "GSE14548", "GSE83591",
                "GSE68744", "GSE88715")
 
-########STROMA
-
-###rank product dei 6 network
+########STROMA#####################################################
+###rank product of the 6 networks
 ranked<-list()
 for(j in 1:length(degs)){
   coef_gsea<-degs[[j]]$kExt1/degs[[j]]$kInt1
@@ -32,7 +36,6 @@ for(j in 1:length(degs)){
   names(coef_gsea)<-gsub("_tis1", "", names(coef_gsea))
   tocompare[,j]<-coef_gsea[incommon]
 }
-cor(tocompare)
 
 rankings<-matrix(nrow=length(incommon), ncol=length(degs))
 rownames(rankings)<-incommon
@@ -45,13 +48,11 @@ rownames(rankprod)<-rankprod[,1]
 
 write.xlsx(rankprod, file=paste("rankprod_stroma_", m, ".xlsx", sep=""), rowNames=T)
 
-
+#comparison of LCM rankproduct with single cell kRatio
 coef_gsea_sc<-degsc$kExt1/degsc$kInt1
 names(coef_gsea_sc)<-gsub("_1", "", names(coef_gsea_sc))
 
-#confronto con rankprod
 inboth<-intersect(rownames(rankprod), names(coef_gsea_sc))
-cor.test(coef_gsea_sc[inboth], log2(rankprod[inboth,2]))
 
 df<-data.frame(rankproduct=log2(rankprod[inboth,2]), sc=coef_gsea_sc[inboth])
 pdf(paste("singlecell_scatter_stroma_",m, ".pdf", sep=""),5,4)
@@ -60,7 +61,6 @@ dev.off()
 
 write.csv(cor.test(coef_gsea_sc[inboth], log2(rankprod[inboth,2]))[c(3,4)], paste("singlecell_scatter_stroma_",m, ".csv", sep=""))
 
-library(ggpubr)
 rankprodinboth<-rankprod[inboth,2]
 names(rankprodinboth)<-inboth
 top<-names(rankprodinboth)[which(rankprodinboth<quantile(rankprodinboth, c(0.1)))]
@@ -72,13 +72,13 @@ pdf(paste("singlecell_boxplot_stroma_",m,".pdf",sep=""),3,5)
 ggboxplot(df, x="dir", y="sc")+stat_compare_means(comparisons=my_comparisons,label = "p.signif")+ylab("Comm. score single cell")+xlab("")
 dev.off()
 
-top50LCM<-rownames(rankprod)[(order(rankprod[,2], decreasing=F))][1:547]
-top50sc<-names(sort(coef_gsea_sc, decreasing=T))[1:1519]
-intersect(top50LCM, top50sc)
-write.csv(intersect(top50LCM, top50sc), paste("stroma_", m, "_1decile.csv", sep=""))
+top10LCM<-rownames(rankprod)[(order(rankprod[,2], decreasing=F))][1:547]
+top10sc<-names(sort(coef_gsea_sc, decreasing=T))[1:1519]
 
-####################EPI
-###rank product dei 6 network
+write.csv(intersect(top10LCM, top10sc), paste("stroma_", m, "_1decile.csv", sep=""))
+
+####################EPI##############################
+###rank product of the 6 networks
 ranked<-list()
 for(j in 1:length(degs)){
   coef_gsea<-degs[[j]]$kExt2/degs[[j]]$kInt2
@@ -111,9 +111,8 @@ write.xlsx(rankprod, file=paste("rankprod_epi_",m, ".xlsx", sep=""), rowNames=T)
 coef_gsea_sc<-degsc$kExt2/degsc$kInt2
 names(coef_gsea_sc)<-gsub("_2", "", names(coef_gsea_sc))
 
-#confronto con rankprod
+#comparison of LCM rankproduct with single cell kRatio
 inboth<-intersect(rownames(rankprod), names(coef_gsea_sc))
-cor.test(coef_gsea_sc[inboth], log2(rankprod[inboth,2]))
 
 df<-data.frame(rankproduct=log2(rankprod[inboth,2]), sc=coef_gsea_sc[inboth])
 pdf(paste("singlecell_scatter_epi_",m,".pdf", sep=""),5,4)
@@ -122,7 +121,6 @@ dev.off()
 
 write.csv(cor.test(coef_gsea_sc[inboth], log2(rankprod[inboth,2]))[c(3,4)], paste("singlecell_scatter_epi_",m, ".csv", sep=""))
 
-library(ggpubr)
 rankprodinboth<-rankprod[inboth,2]
 names(rankprodinboth)<-inboth
 top<-names(rankprodinboth)[which(rankprodinboth<quantile(rankprodinboth, c(0.1)))]
@@ -134,21 +132,17 @@ pdf(paste("singlecell_boxplot_epi_",m, ".pdf", sep=""),3,5)
 print(ggboxplot(df, x="dir", y="sc")+stat_compare_means(comparisons=my_comparisons,label = "p.signif")+ylab("Comm. score single cell")+xlab(""))
 dev.off()
 
+top10LCM<-rownames(rankprod)[(order(rankprod[,2], decreasing=F))][1:547]
+top10sc<-names(sort(coef_gsea_sc, decreasing=T))[1:1519]
 
-top50LCM<-rownames(rankprod)[(order(rankprod[,2], decreasing=F))][1:547]
-top50sc<-names(sort(coef_gsea_sc, decreasing=T))[1:1519]
-intersect(top50LCM, top50sc)
-write.csv(intersect(top50LCM, top50sc), paste("epi_", m, "_1decile.csv", sep=""))
+write.csv(intersect(top10LCM, top10sc), paste("epi_", m, "_1decile.csv", sep=""))
 
-###GSEA
-library(msigdbr)
-library(fgsea)
-library(data.table)
-library(openxlsx)
+######################################
+###GSEA of single cell kRatio
+#######################################à
 
 m_df = msigdbr(species = "Homo sapiens", category = "C5")
 m_list = m_df %>% split(x = .$gene_symbol, f = .$gs_name)
-
 
 coef_gsea<-degsc$kExt1/degsc$kInt1
 names(coef_gsea)<-gsub("_1", "", names(coef_gsea))

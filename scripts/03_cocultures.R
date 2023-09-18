@@ -1,12 +1,12 @@
-LCM_vs_cocultures<-function(at,b,ct,pv,m, dir){
+LCM_vs_cocultures<-function(at,b,ct,m, dir){
 require(ggplot2)
 require(fgsea)
 require(data.table)
 
 setwd(dir)
 
-load("data/CAFs_cocultures.RData")
-setwd(paste("results/",at,b,ct,pv, sep=""))
+load("data/CAFs_cocultures_small.RData")
+setwd(paste("results/",at,b,ct, sep=""))
 
 load(paste("degs_3rd_", m, ".RData", sep=""))
 
@@ -35,7 +35,11 @@ for(j in 1:length(degs)){
 
   fgseaRes <- fgseaMultilevel(DE_epi, coef_gsea)
   gsea_epi[,j]<-unlist(fgseaRes[,2])
-
+ if(j==1){
+   pdf(paste("epi_gsea_example_", m, ".pdf", sep=""),4,4)
+   print(plotEnrichment(DE_epi[[3]], coef_gsea))
+   dev.off()
+ }
 }
 
 set.seed(46956305)
@@ -63,7 +67,7 @@ data <- data.frame(
   sd=c(0, sd(random_repeated_stroma))
 )
 
-pdf(paste("stroma_gsea_signif_", m, ".pdf", sep=""), 4,5)
+pdf(paste("stroma_gsea_signif_", m, ".pdf", sep=""), 3,5)
 ggplot(data) +
   geom_bar( aes(x=name, y=value), stat="identity", fill="darkgreen") +
   geom_errorbar( aes(x=name, ymin=value-sd, ymax=value+sd), width=0.4, size=1.3) + theme_bw()
@@ -100,7 +104,7 @@ data <- data.frame(
   sd=c(0, sd(random_repeated_epi))
 )
 
-pdf(paste("epi_gsea_signif_", m, ".pdf"), sep="", 4,5)
+pdf(paste("epi_gsea_signif_", m, ".pdf", sep=""), 3,5)
 ggplot(data) +
   geom_bar( aes(x=name, y=value), stat="identity", fill="brown2") +
   geom_errorbar( aes(x=name, ymin=value-sd, ymax=value+sd), width=0.4, size=1.3) + theme_bw()
