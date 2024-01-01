@@ -1,7 +1,3 @@
-require(crossWGCNA)
-require(ggplot2)
-require(ggnewscale)
-
 rm_selfloop <- function(A,comp1=comp1,comp2=comp2,verbose=TRUE)
 {
   if(verbose) cat("Removing self-loops only...\n")
@@ -55,9 +51,6 @@ Adjacency <- function(
   pval="none",
   thr=0.05,
   beta=6,
-  sign_list=1,
-  compartment_sel="none",
-  selgenes=NA,
   verbose=FALSE)
   {
     if(!(method %in% c("netdiff","selfloop"))){
@@ -78,15 +71,11 @@ Adjacency <- function(
     if(!is.numeric(beta)){
       stop("'beta' argument should be an integer. Default is 6.")
     }
-    if(!is.numeric(sign_list)){
-      stop("'sign_list' argument should be a positive or negative integer (i.e., +1 or -1)")
-    }
-    if(!(compartment_sel %in% c("none","comp1","comp2"))){
-      stop("'compartment_sel' argument is different from all the admitted values.\n Please refer to manual for further details.")
-    }
+
     if(verbose){
       cat("Computing correlation matrix...\n")
     }
+
     if (pval=="none") {
       if (cortype=="bicor") {
         A <- bicor(t(data))
@@ -111,52 +100,17 @@ Adjacency <- function(
     if(verbose){
       cat("..Done!\n")
     }
-
+    
     comp1 <- paste(comp1,"$",sep="")
     comp2 <- paste(comp2,"$",sep="")
 
     if(method=="selfloop"){
       A <- rm_selfloop(A,comp1=comp1,comp2=comp2)
     }
-
+    
     if(method=="netdiff"){
       A <- rm_netdiff(A,comp1=comp1,comp2=comp2)
     }
-
-    suppressWarnings(if(!all(is.na(selgenes)) & is.character(na.omit(selgenes)))
-    {
-      if(compartment_sel!="none")
-      {
-        sign_list <- sign_list[which(!is.na(sign_list))]
-        comp <- ifelse(compartment_sel=="comp2",comp2,comp1)
-        names(sign_list) <- paste(names(sign_list), gsub("\\$", "", comp), sep = "")
-        selgenes <- intersect(paste(selgenes, gsub("\\$", "", comp), sep = ""), rownames(A))
-        sel1 <- c(grep(comp1, rownames(A)), which(rownames(A) %in% selgenes))
-        sel2 <- c(which(rownames(A) %in% selgenes), grep(comp2, rownames(A)))
-
-        if(compartment_sel=="comp2"){
-          A <- A[sel1,sel1]
-        } else {
-          A <- A[sel2,sel2]
-        }
-
-        genes_comp1 <- grep(comp1, rownames(A))
-        genes_comp2 <- grep(comp2, rownames(A))
-
-        if(compartment_sel=="comp2"){
-          A[genes_comp2, genes_comp1] <- A[genes_comp2, genes_comp1]*(sign_list[rownames(A)[genes_comp2]])
-          A[genes_comp1, genes_comp2] <- t(A[genes_comp2, genes_comp1]*(sign_list[rownames(A)[genes_comp2]]))
-        } else {
-          A[genes_comp1, genes_comp2] <- A[genes_comp1, genes_comp2]*(sign_list[rownames(A)[genes_comp1]])
-          A[genes_comp2, genes_comp1] <- t(A[genes_comp1, genes_comp2]*(sign_list[rownames(A)[genes_comp1]]))
-        }
-      } else {
-        stop("'compartment_sel' can't be 'none' when 'selgenes' is specified")
-      }
-    } else {
-      warning("No subsets of genes selected.. using all the genome\n")
-    }
-    )
 
     if(verbose){
       cat("Computing adjacency matrix...\n")
@@ -184,14 +138,14 @@ clusteringWGCNA <- function(A,data,comp1="_1",comp2="_2",TOM=TRUE,ds=1,crossOnly
   comp2 <- paste(comp2, "$", sep="")
   genes_comp1 <- grep(comp1, rownames(A))
   genes_comp2 <- grep(comp2, rownames(A))
-
+  
   if (crossOnly){
     A[genes_comp1, genes_comp1] <- 0
     A[genes_comp2, genes_comp2] <- 0
   }
 
   A <- rm_selfloop(A,comp1=comp1,comp2=comp2,verbose=F)
-
+    
   if(TOM){
     similarity <- TOMsimilarity(A, TOMType="signed")
     rownames(similarity) <- rownames(A)
@@ -248,14 +202,11 @@ crossWGCNA <- function(
   doTOM=TRUE,
   ds=1,
   crossOnly=TRUE,
-  sign_list=1,
-  compartment_sel="none",
-  selgenes=NA,
   verbose=TRUE)
   {
     comp1 <- paste(comp1, "$", sep = "")
     comp2 <- paste(comp2, "$", sep = "")
-
+    
     Adj <- Adjacency(
       data=data,
       method=method,
@@ -266,9 +217,6 @@ crossWGCNA <- function(
       beta=beta,
       comp1=comp1,
       comp2=comp2,
-      sign_list=sign_list,
-      compartment_sel=compartment_sel,
-      selgenes=selgenes,
       verbose=TRUE
     )
 
@@ -305,7 +253,7 @@ changenames <- function(data, anno)
     annotation_sel <- annotation_sel[-which(annotation_sel=="")]
   }
   a <- which(duplicated(annotation_sel))
-  while(length(a)>0)
+  while(length(a)>0) 
   {
     for(i in 1:length(unique(annotation_sel))){
       if(length(which(annotation_sel==unique(annotation_sel)[i])) > 1) {
@@ -318,7 +266,7 @@ changenames <- function(data, anno)
     annotation_sel <- na.omit(annotation_sel)
     a <- which(duplicated(annotation_sel))
   }
-  rownames(data)=annotation_sel
+  rownames(data)-annotation_sel
   return(data)
 }
 
@@ -332,7 +280,7 @@ degrees_mod <- function(
   thr=0.05,
   beta=6,
   comp1="_1",
-  comp2="_2")
+  comp2="_2") 
   {
     k <- list()
     for (i in 1:length(unique(modules))){
@@ -399,30 +347,30 @@ cor_inspect <- function(data,gene1,gene2,comp1="_tis1",comp2="_tis2")
 {
   df <- data.frame(
     gene1=c(
-      data[paste(gene1, comp1, sep=""),],
-      data[paste(gene1, comp2, sep=""),],
-      data[paste(gene1, comp1, sep=""),],
+      data[paste(gene1, comp1, sep=""),], 
+      data[paste(gene1, comp2, sep=""),], 
+      data[paste(gene1, comp1, sep=""),], 
       data[paste(gene1, comp2, sep=""),]),
     gene2=c(
-      data[paste(gene2, comp1, sep=""),],
-      data[paste(gene2, comp2, sep=""),],
-      data[paste(gene2, comp2, sep=""),],
+      data[paste(gene2, comp1, sep=""),], 
+      data[paste(gene2, comp2, sep=""),], 
+      data[paste(gene2, comp2, sep=""),], 
       data[paste(gene2, comp2, sep=""),]),
     compartment=c(
       rep(c(
         "comp1 vs comp1",
         "comp2 vs comp2",
-        "comp1 vs comp2",
-        "comp2 vs comp1"),
+        "comp1 vs comp2", 
+        "comp2 vs comp1"), 
         each=ncol(data))))
-
+  
   p <- ggplot(df, aes(x=gene1, y=gene2))+
     geom_point()+
     facet_wrap(.~compartment)+
     geom_smooth(method = "lm")+
     theme_classic()+
     labs(x=gene1, y=gene2)
-
+  
   return(p)
 }
 
@@ -490,12 +438,12 @@ ST_expr_smooth <- function(expr_data, coords, max_dist=5, spots_class, sel_class
 ##epi with at least 1 selected sroma spot
 
 ST_spots_filt <- function(coords, tis1_spots, tis2_spots)
-{
+{  
   x_bin <- coords[,1]
   y_bin <- coords[,2]
-
+  
   included_es_spots <- c()
-
+  
   for(es in tis1_spots){
     which_x_coord <- which(x_bin>=x_bin[es]-2 & x_bin<=x_bin[es]+2)
     which_y_coord <- which(y_bin>=y_bin[es]-sqrt(3)-0.1 & y_bin<=y_bin[es]+sqrt(3)+0.1)
@@ -507,7 +455,7 @@ ST_spots_filt <- function(coords, tis1_spots, tis2_spots)
   }
 
   included_ss_spots <- c()
-
+  
   for(ss in tis2_spots){
     which_x_coord <- which(x_bin>=x_bin[ss]-2 & x_bin<=x_bin[ss]+2)
     which_y_coord <- which(y_bin>=y_bin[ss]-sqrt(3)-0.1 & y_bin<=y_bin[ss]+sqrt(3)+0.1)
@@ -571,10 +519,10 @@ ST_merged_dataset <- function(sel_spots, coords, averaged_expr_all, var_thr=0.75
       included_spots <- c(included_spots, es)
     }
   }
-
+  
   rownames(tis1_expr_all) <- rownames(averaged_expr_all)
   rownames(tis2_expr_all) <- rownames(averaged_expr_all)
-
+  
   tis1_expr_all <- tis1_expr_all[,-1]
   tis2_expr_all <- tis2_expr_all[,-1]
 
@@ -582,7 +530,7 @@ ST_merged_dataset <- function(sel_spots, coords, averaged_expr_all, var_thr=0.75
   var_tis1 <- apply(tis1_expr_all,1,var)
 
   genes <- intersect(
-    which(var_tis2>quantile(var_tis2, var_thr, na.rm=T)),
+    which(var_tis2>quantile(var_tis2, var_thr, na.rm=T)), 
     which(var_tis1>quantile(var_tis1, var_thr, na.rm=T)))
 
   genes <- rownames(averaged_expr_all)[genes]
@@ -601,13 +549,13 @@ ST_merged_dataset <- function(sel_spots, coords, averaged_expr_all, var_thr=0.75
 #included_spots output of merged_dataset [[2]]
 
 ST_boundary_spots <- function(included_spots, coords, tis2_spots)
-{
+{  
   x_bin <- coords[,1]
   y_bin <- coords[,2]
-
+  
   included_spots_tis1 <- c()
   included_spots_tis2 <- c()
-
+  
   for(es in included_spots){
     which_x_coord <- which(x_bin>=x_bin[es]-2 & x_bin<=x_bin[es]+2)
     which_y_coord <- which(y_bin>=y_bin[es]-sqrt(3)-0.1 & y_bin<=y_bin[es]+sqrt(3)+0.1)
@@ -622,13 +570,13 @@ ST_boundary_spots <- function(included_spots, coords, tis2_spots)
 ##midpoints coordinates
 #output of boundary_spots
 ST_midpoints_def <- function(coords, sel_spots)
-{
+{  
   x_bin <- coords[,1]
   y_bin <- coords[,2]
-
+  
   included_spots_tis1 <- sel_spots[[1]]
   included_spots_tis2 <- sel_spots[[2]]
-
+  
   df <- data.frame(
     x_coord=c(
       x_bin[included_spots_tis1],
@@ -649,12 +597,12 @@ ST_midpoints_def <- function(coords, sel_spots)
 ###visualize gene expression in space
 #midpoints from midpoints_def
 ST_plot_expr <- function(
-  gene,
-  averaged_expr_all,
-  coords,
-  included_spots,
-  tis1_spots,
-  tis2_spots,
+  gene, 
+  averaged_expr_all, 
+  coords, 
+  included_spots, 
+  tis1_spots, 
+  tis2_spots, 
   midpoints)
   {
     midpoints_x <- midpoints[[1]]
@@ -663,21 +611,21 @@ ST_plot_expr <- function(
     df <- data.frame(
       x_coord= c(
         x_bin[tis1_spots],
-        x_bin[tis2_spots],
+        x_bin[tis2_spots], 
         x_bin[included_spots]),
       y_coord=c(
-        -(y_bin[tis1_spots]),
-        -(y_bin[tis2_spots]),
+        -(y_bin[tis1_spots]), 
+        -(y_bin[tis2_spots]), 
         -y_bin[included_spots]),
       compartment=c(
         rep("tis1", length(tis1_spots)),
-        rep("tis2", length(tis2_spots)),
+        rep("tis2", length(tis2_spots)), 
         rep("edge", length(included_spots))),
       gene=c(
-        averaged_expr_all[gene,tis1_spots],
-        averaged_expr_all[gene,tis2_spots],
+        averaged_expr_all[gene,tis1_spots], 
+        averaged_expr_all[gene,tis2_spots], 
         averaged_expr_all[gene,included_spots]))
-
+  
   df_midpoint <- data.frame(x_coord= midpoints_x,y_coord=midpoints_y)
 
   p <- ggplot(
@@ -696,14 +644,14 @@ ST_plot_expr <- function(
 #midpoints from midpoints_def
 
 ST_plot_comm <- function(
-  gene1,
-  gene2,
-  averaged_expr_all,
-  coords,
-  included_spots,
-  sel_spots,
-  tis1_spots,
-  tis2_spots,
+  gene1, 
+  gene2, 
+  averaged_expr_all, 
+  coords, 
+  included_spots, 
+  sel_spots, 
+  tis1_spots, 
+  tis2_spots, 
   midpoints)
   {
     midpoints_x <- midpoints[[1]]
@@ -714,27 +662,27 @@ ST_plot_comm <- function(
 
     included_spots_tis1 <- sel_spots[[1]]
     included_spots_tis2 <- sel_spots[[2]]
-
+  
     df <- data.frame(
       x_coord=c(
         x_bin[tis1_spots],
-        x_bin[tis2_spots],
+        x_bin[tis2_spots], 
         x_bin[included_spots]),
       y_coord=c(
-        -(y_bin[tis1_spots]),
-        -(y_bin[tis2_spots]),
+        -(y_bin[tis1_spots]), 
+        -(y_bin[tis2_spots]), 
         -y_bin[included_spots]),
       compartment=c(
         rep("tis1", length(tis1_spots)),
-        rep("tis2", length(tis2_spots)),
+        rep("tis2", length(tis2_spots)), 
         rep("edge", length(included_spots))),
       gene1=c(
-        averaged_expr_all[gene1,tis1_spots],
-        averaged_expr_all[gene1,tis2_spots],
+        averaged_expr_all[gene1,tis1_spots], 
+        averaged_expr_all[gene1,tis2_spots], 
         averaged_expr_all[gene1,included_spots]),
       gene2=c(
-        averaged_expr_all[gene2,tis1_spots],
-        averaged_expr_all[gene2,tis2_spots],
+        averaged_expr_all[gene2,tis1_spots], 
+        averaged_expr_all[gene2,tis2_spots], 
         averaged_expr_all[gene2,included_spots])
     )
 
@@ -746,14 +694,14 @@ ST_plot_comm <- function(
       x_coord=midpoints_x,
       y_coord=midpoints_y,
       comm_score=averaged_expr_all[gene1,included_spots_tis1]*averaged_expr_all[gene2,included_spots_tis2])
-
+        
     p <- ggplot(
-      data=df,
+      data=df, 
       aes(x=x_coord, y=y_coord))+
       geom_point(data=df_midpoint, size=1, aes(colour=comm_score))+
       scale_color_continuous(type = "viridis")+
       theme_classic()
-
+      
     return(p)
   }
 
