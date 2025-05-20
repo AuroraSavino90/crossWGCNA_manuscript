@@ -48,3 +48,20 @@ LCM_coherence(at,b,ct,dir)
 #apply crossWGCNA to inter-regulatory-layer interactions
 source("scripts/07_mrnavsprot.R")
 mrna_vs_prot(at,b,ct,m="netdiff", dir)
+
+##################
+##Additional checks
+#################
+
+#compute crossWGCNA degrees on the GSE161529 single cell RNA-seq dataset randomizing the matching between stroma and epithelial samples
+source("scripts/GSE161529_degs_rand.R")
+GSE161529_degs(at,b,ct, dir)
+source("scripts/04_LCM_vs_singlecell_rand.R")
+
+#test the impact of single cell clustering on communication scores
+source("scripts/sc_clusts_netdiff.R")
+
+#test the enrichment of genes with high communication scores in known ligands and receptors
+source("scripts/LR_enrichment.R")
+
+

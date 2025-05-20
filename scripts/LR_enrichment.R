@@ -1,5 +1,6 @@
 library(fgsea)
-load("/results/signed6spearman/degs_3rd_netdiff.RData")
+setwd(dir)
+load(paste("results/",at,b,ct,"/degs_3rd_netdiff.RData", sep=""))
 lr<-read.csv("/data/human_lr_pair.txt", sep="\t")
 l<-unique(lr$ligand_gene_symbol)
 r<-unique(lr$receptor_gene_symbol)
@@ -44,5 +45,7 @@ meta_dn_rev<-function(x){
   return(p[[3]])
 }
 
-meta_dn_rev(fgseaRes)
-meta_dn_rev(fgseaRes2)
+p1<-meta_dn_rev(fgseaRes)
+p2<-meta_dn_rev(fgseaRes2)
+
+save(list(p1,p2), file=paste("results/",at,b,ct,"/LR_enrichment.RData", sep=""))

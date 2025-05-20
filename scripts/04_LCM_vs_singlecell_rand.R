@@ -6,12 +6,8 @@ require(msigdbr)
 require(fgsea)
 require(data.table)
 ##Setting the parameters
-at<-"signed"#adjacency type
-ct<-"spearman"#correlation type
-b<-6#beta
-m<-"netdiff"
 
-dir<-"path_to_workdir"# directory with "data","scripts" and "results" folders within
+#dir<-"path_to_workdir"# directory with "data","scripts" and "results" folders within
 setwd(dir)
 
 setwd(paste("results/",at,b,ct, sep=""))

@@ -1,11 +1,5 @@
-dir<-"path_to_workdir"# directory with "data","scripts" and "results" folders within
+#dir<-"path_to_workdir"# directory with "data","scripts" and "results" folders within
 setwd(dir)
-
-dir<-getwd()
-##Setting the parameters
-at<-"signed"#adjacency type
-ct<-"spearman"#correlation type
-b<-6#beta
 
 dir.create(paste("results/",at,b,ct, sep=""))
 

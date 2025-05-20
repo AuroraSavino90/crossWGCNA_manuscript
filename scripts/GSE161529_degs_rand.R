@@ -21,7 +21,7 @@ ind<-which(colSums(is.na(averagedEpi))==0 & colSums(is.na(averagedStroma))==0)
 averagedEpi<-averagedEpi[, ind]
 averagedStroma<-averagedStroma[, ind]
 
-#set.seed(563930)
+
 set.seed(5907596)
 averagedEpi<-averagedEpi[, sample(1:ncol(averagedEpi), replace = F)]
 averagedStroma<-averagedStroma[, sample(1:ncol(averagedStroma), replace = F)]
