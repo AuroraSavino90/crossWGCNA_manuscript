@@ -56,9 +56,6 @@ colnames(matS)<-c("PC 15; res 0.1", "PC 15; res 0.5", "PC 15; res 1",
                   "PC 30; res 0.1", "PC 30; res 0.5", "PC 30; res 1",
                   "PC 50; res 0.1", "PC 50; res 0.5", "PC 50; res 1")
 
-cor(matE)
-cor(matS)
-
 library(pheatmap)
 
 paletteLength <- 50
@@ -73,7 +70,3 @@ dev.off()
 pdf(paste("cor_matS.pdf", sep=""),10,10)
 pheatmap(cor(matS),   cellwidth=15, cellheight=15,  keep.dendro=T, color = myColor, breaks = myBreaks)
 dev.off()
-
-summary(cor(matE)[upper.tri(cor(matE))])
-
-pheatmap(cor(matE))
