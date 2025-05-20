@@ -2,7 +2,7 @@
 Code to reproduce the results of the manuscript "Cross-tissue gene expression interactions from bulk, single cell and spatial transcriptomics with crossWGCNA".
 
 ## Description
-To run the code, input data should be downloaded from Zenodo (10.5281/zenodo.8355624), unzipped and placed in a working directory containing the "scripts" folder from the current repository.
+To run the code, input data should be downloaded from Zenodo (10.5281/zenodo.15472801), unzipped and placed in a working directory containing the "scripts" folder from the current repository.
 Note that the file "GSE83591_Correspondence_LCM.xlsx" is available upon request. CrossWGCNA networks are nevertheless made available in the Zenodo file, "results" folder.
 The code is organized as follows:
 - 00_main: wrapper to run all the analyses except for the spatial transcriptomics pipeline. Input parameters can be modified, but to reproduce the manuscript's results keep the parameters as set.
