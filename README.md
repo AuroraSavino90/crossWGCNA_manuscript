@@ -3,6 +3,7 @@ Code to reproduce the results of the manuscript "Cross-tissue gene expression in
 
 ## Description
 To run the code, input data should be downloaded from Zenodo (10.5281/zenodo.8355624), unzipped and placed in a working directory containing the "scripts" folder from the current repository.
+Note that the file "GSE83591_Correspondence_LCM.xlsx" is available upon request. CrossWGCNA networks are nevertheless made available in the Zenodo file, "results" folder.
 The code is organized as follows:
 - 00_main: wrapper to run all the analyses except for the spatial transcriptomics pipeline. Input parameters can be modified, but to reproduce the manuscript's results keep the parameters as set.
 - 01_degs: runs crossWGCNA to compute inter-tissue degrees for six laser capture microdissection (LCM) datasets.
