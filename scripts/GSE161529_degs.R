@@ -35,10 +35,10 @@ colnames(epi)<-colnames(stroma)
 data_merged<-rbind(stroma, epi)
 
 #crossWGCNA functions
-degsc<-crossWGCNA(data=data_merged, method="netdiff", doClusters=F, Adj_type=at, cortype=ct, pval="none", thr=pv, beta=b, comp1="_1", comp2="_2", )
+degsc<-crossWGCNA(data=data_merged, method="netdiff", doClusters=F, Adj_type=at, cortype=ct, pval="none",  beta=b, comp1="_1", comp2="_2", )
 save(degsc, file="degsc_netdiff.RData")
 
-degsc<-crossWGCNA(data=data_merged, method="selfloop", doClusters=F, Adj_type=at, cortype=ct, pval="none", thr=pv, beta=b, comp1="_1", comp2="_2")
+degsc<-crossWGCNA(data=data_merged, method="selfloop", doClusters=F, Adj_type=at, cortype=ct, pval="none",  beta=b, comp1="_1", comp2="_2")
 save(degsc, file="degsc_selfloop.RData")
 
 }
